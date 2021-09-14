@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+
+
+# add other stuff
+.httr-oauth
+.DS_Store
+
+# no htmls for now
+docs/*html
