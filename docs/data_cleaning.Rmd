@@ -1,0 +1,66 @@
+---
+title: "Data Cleaning"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, libraries}
+
+library(glue)
+library(here)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(tidyr)
+
+```
+
+## Data Sources
+
+Read in the data from the [KNB](https://knb.ecoinformatics.org/view/df35b.304.2)
+
+```{r getdata}
+
+catch_original <- read.csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1")
+
+```
+
+
+## Clean and Reshape
+
+  * remove unnecessary cols
+  * check col types
+  * reshape data
+  
+```{r selCols}
+
+catch_data <- catch_original %>% 
+  select(-c(All, notesRegCode)) %>% 
+  # case_when is a fancy if_else
+  mutate(Chinook = case_when(
+    Chinook == "I" ~ "1",
+    TRUE ~ Chinook) # this means if it doesn't match I, use the original value
+  ) %>% 
+  # fix col type
+  mutate(Chinook = as.integer(Chinook))
+  #mutate(across(Year:Chum, as.integer))
+
+summary(catch_data)
+```
+
+
+Where are NAs?
+
+```{r}
+i_na <- which(is.na(catch_data$Chinook))
+
+```
+
+Yay!
+
+## Join to Regions Definitions
+
+
