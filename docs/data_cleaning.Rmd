@@ -61,6 +61,42 @@ i_na <- which(is.na(catch_data$Chinook))
 
 Yay!
 
+### Reshape
+
+```{r}
+catch_long <- catch_data %>% 
+  pivot_longer(cols = -c(Region, Year), names_to = "species", values_to = "catch")
+
+```
+
+### Summarize
+
+```{r}
+mean_region <- catch_long %>% 
+  group_by(Region) %>% 
+  summarize(catch_mean = mean(catch))
+
+mean_range <- catch_long %>% 
+  group_by(Region) %>% 
+  summarize(yr_max = max(Year),
+            yr_min = min(Year),
+            yr_range = yr_max-yr_min, 
+            n= n(), .groups = "drop")
+
+```
+
 ## Join to Regions Definitions
 
+```{r}
+region_defs <- read.csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1") %>% 
+    select(code, mgmtArea)
+
+```
+
+
+Now join
+
+```{r}
+catch_joined <- left_join(catch_long, region_defs, by=c("Region"="code"))
+```
 
