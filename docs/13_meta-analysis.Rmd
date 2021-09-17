@@ -1,0 +1,135 @@
+---
+title: "Meta-Analysis"
+description: |
+  Doing meta-analysis with `metafor`
+author:
+  - name: R.A.P 
+date: "Updated: `r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message = FALSE)
+library(glue)
+library(here)
+```
+
+# Doing Meta-Analyses
+
+Lesson material from [NCEAS book](https://learning.nceas.ucsb.edu/2021-09-delta/session-13-meta-analysis-in-r.html).
+
+ - Metafor
+ 
+Calculating effect sizes is great first step.
+
+
+### Prisma  
+
+Terms 
+2021
+[restoration * desert * vegetation*]   
+[restoration “agricultural lands”]   
+
+
+```{r}
+library(PRISMAstatement)
+prisma(found = 2482,
+       found_other = 0,
+       no_dupes = 1841, 
+       screened = 1841, 
+       screen_exclusions = 313, 
+       full_text = 313,
+       full_text_exclusions = 251, 
+       qualitative = 61, 
+       quantitative = 31,
+       width = 600, height = 600) #31 = plant richness, and 62 are the ag and grazing papers
+```
+
+
+### Get Bronchial Data
+
+```{data}
+
+brac <- read.csv("https://figshare.com/ndownloader/files/14460386")
+head(brac)
+```
+
+
+### Meta
+
+
+```{r mods}
+#metafor approach
+library(metafor)
+library(broom)
+
+data <- escalc(measure = "MD", 
+               # treatments: mean effect, SE, and counts
+               m1i= Me, sd1i= Se, n1i=Ne,
+               # controls: mean effect, SE, and counts
+               m2i= Mc, sd2i= Sc, n2i= Nc, 
+               data = brac,  append = TRUE)
+
+head(data)
+
+#single model with moderators
+res1 <- rma(yi = yi, sei = vi, method = "ML", test = "knha", 
+            control=list(stepadj=0.5), data = data)
+summary(res1)
+
+# add author
+res2 <- rma(yi = yi, sei = vi, method = "ML", mods = ~author-1, 
+            test = "knha", control=list(stepadj=0.5), data = data)
+summary(res2)
+
+# add year
+res3 <- rma(yi = yi, sei = vi, method = "ML", mods = ~year, 
+            test = "knha", control=list(stepadj=0.5), data = data)
+summary(res3)
+
+```
+
+### Tidy and Summarize Model
+
+```{r tidymod}
+library(dplyr)
+r2 <- tidy(res2) %>% 
+  #mutate(term = str_remove(term, "outcome")) %>% 
+  filter(term != "intercept")
+
+knitr::kable(r2)
+anova(res2, res3) # anova(reduced, full) to match print output order
+#likelihood ratio test, the results of which we can see in the LRT
+anova(res1, res3)
+
+#bias
+regtest(res2) 
+ranktest(res3)
+
+funnel(res1)
+funnel(res2)
+funnel(res3)
+#permutation to assess fit
+permutest(res3, iter = 100) #success no meaningful decreases in statistical significance
+permutest(res2, iter = 100) #success no meaningful decreases in statistical significance
+
+```
+
+### Viz
+```{r viz}
+
+library(ggplot2)
+ggplot(data, aes(x=year, y=yi, color = author, size=vi)) +
+  geom_point() +
+  #stat_smooth(data=data, aes(x=year, y=yi), method = "lm", size = 2, se = TRUE) +
+  #geom_hline(yintercept = 0, linetype = 2, colour = "black", size = 1.5) +
+  labs(x = "", y = "Mean Effect Size for Brachio", color = "Author", size="Var") +
+  theme_bw() #+
+  #theme(panel.border = element_rect(colour = "black", fill=NA, size=1.5))
+
+```
+
+
+
+
+
