@@ -29,6 +29,6 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 
 ## Super
 
-Adding some more fun stuff like a picture here:
+Parsa is editing Ryan's line here
 
 ![](https://www.r4wrds.com/intermediate/images/team_and_task_v2.png)
