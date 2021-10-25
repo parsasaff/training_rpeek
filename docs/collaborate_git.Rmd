@@ -32,3 +32,12 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 Parsa is editing Ryan's line here
 
 ![](https://www.r4wrds.com/intermediate/images/team_and_task_v2.png)
+
+
+
+
+
+## Merge Conflicts!!
+
+
+![](https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif)
