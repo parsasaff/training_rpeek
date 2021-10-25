@@ -25,4 +25,10 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-***This is Parsa testing a push!
+**This is Parsa testing a push!**
+
+## Super
+
+Adding some more fun stuff like a picture here:
+
+![](https://www.r4wrds.com/intermediate/images/team_and_task_v2.png)
