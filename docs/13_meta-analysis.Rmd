@@ -48,7 +48,7 @@ prisma(found = 2482,
 
 ### Get Bronchial Data
 
-```{data}
+```{r data}
 
 brac <- read.csv("https://figshare.com/ndownloader/files/14460386")
 head(brac)
